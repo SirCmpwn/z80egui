@@ -44,6 +44,7 @@
     <Compile Include="MainWindow.cs" />
     <Compile Include="libscas\objects.cs" />
     <Compile Include="libscas\list.cs" />
+    <Compile Include="libscas\expression.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
