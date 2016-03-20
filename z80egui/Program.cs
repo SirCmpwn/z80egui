@@ -1,44 +1,56 @@
 ﻿using System;
-using z80egui.libscas;
+using Xwt;
+using z80egui.libz80e;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace z80egui
 {
-    public unsafe class Program
+    public static unsafe class Program
     {
-        public static unsafe void Main(string[] args)
+        public static asic_t *ASIC { get; set; }
+        public static IntPtr RunLoop { get; set; }
+        public static Stopwatch Stopwatch { get; set; }
+
+        public static void Run(int cycles)
         {
-            list_t *symbols = scas.create_list();
-            symbol_t test_symbol = new symbol_t
+            z80e.runloop_tick_cycles(RunLoop, cycles);
+        }
+
+        private static void InitializeCalculator(string[] args)
+        {
+            ASIC = z80e.asic_init(TIDeviceType.TI84pSE, IntPtr.Zero); // TODO: Parse args for device type
+            RunLoop = z80e.runloop_init(ASIC);
+            var bytes = File.ReadAllBytes(args[0]);
+            Marshal.Copy(bytes, 0, (IntPtr)ASIC->mmu.flash, bytes.Length);
+        }
+
+        public static void Main(string[] args)
+        {
+            if (RuntimeInfo.IsLinux)
             {
-                type = SymbolType.Equate,
-                value = 1234,
-                name = (char *)Marshal.StringToHGlobalAnsi("test_symbol")
-            };
-            scas.list_add(symbols, &test_symbol);
-            var expression = scas.parse_expression("2 + 2 + test_symbol");
-            for (int i = 0; i < expression->tokens->length; i++)
-            {
-                var token = (expression_token_t*)expression->tokens->items[i];
-                switch (token->type)
+                try
                 {
-                    case TokenType.Number:
-                        Console.WriteLine("[number] {0}", token->number);
-                        break;
-                    case TokenType.Operator:
-                        Console.WriteLine("[operator] {0}", token->operator_);
-                        break;
-                    case TokenType.Symbol:
-                        Console.WriteLine("[symbol] {0}", Marshal.PtrToStringAnsi((IntPtr)token->symbol));
-                        break;
-                    case TokenType.OpenParenthesis:
-                        Console.WriteLine("[open parenthesis]");
-                        break;
+                    Application.Initialize(ToolkitType.Gtk3);
+                }
+                catch
+                {
+                    Application.Initialize(ToolkitType.Gtk);
                 }
             }
-            int err;
-            ulong result = scas.evaluate_expression(expression, symbols, &err);
-            Console.WriteLine("Result: {0}", result);
+            else if (RuntimeInfo.IsMacOSX)
+                Application.Initialize(ToolkitType.Gtk); // TODO: Cocoa
+            else if (RuntimeInfo.IsWindows)
+                Application.Initialize(ToolkitType.Wpf);
+
+            InitializeCalculator(args);
+            Stopwatch = new Stopwatch();
+            Stopwatch.Start();
+            var window = new MainWindow();
+            window.Show();
+            Application.Run();
+            window.Dispose();
         }
     }
 }

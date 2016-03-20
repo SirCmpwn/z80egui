@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace TrueCraft.Core
+namespace z80egui
 {
     public static class RuntimeInfo
     {

@@ -17,9 +17,10 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ConsolePause>false</ConsolePause>
+    <Commandlineparameters>/home/sircmpwn/sources/z80egui/KnightOS-TI84pSE.rom</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
@@ -45,6 +46,8 @@
     <Compile Include="libscas\objects.cs" />
     <Compile Include="libscas\list.cs" />
     <Compile Include="libscas\expression.cs" />
+    <Compile Include="libz80e\asic.cs" />
+    <Compile Include="Widgets\ScreenWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -71,5 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="libscas\" />
+    <Folder Include="libz80e\" />
+    <Folder Include="Widgets\" />
   </ItemGroup>
 </Project>
